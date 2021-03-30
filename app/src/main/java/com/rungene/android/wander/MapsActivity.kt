@@ -11,6 +11,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -63,6 +64,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //Add a marker to the map at your home.
         map.addMarker(MarkerOptions().position(homeLatLng))
 
+        //call setMapLongClick(). Pass in map.
+        setMapLongClick(map)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -90,5 +94,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+   /* Create a method stub in MapsActivity called setMapLongClick() that takes a GoogleMap as
+    an argument. Attach a long click listener to the map object.*/
+
+    private fun setMapLongClick(map:GoogleMap) {
+        map.setOnMapLongClickListener { latLng ->
+            // title of the marker to “Dropped Pin” and set the marker’s snippet to the snippet
+            // you just created.
+            // A Snippet is Additional text that's displayed below the title.
+            val snippet = String.format(
+                    Locale.getDefault(),
+                    "Lat: %1$.5f, Long: %2$.5f",
+                    latLng.latitude,
+                    latLng.longitude
+            )
+
+            map.addMarker(
+                    MarkerOptions()
+                            .position(latLng)
+                            .title(getString(R.string.dropped_pin))
+                            .snippet(snippet)
+            )
+        }
     }
 }
