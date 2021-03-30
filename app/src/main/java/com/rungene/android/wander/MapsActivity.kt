@@ -38,10 +38,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        //These coordinates represent the latitude and longitude of the Googleplex.
+        val latitude = 37.422160
+        val longitude = -122.084270
+
+
+    /*    The zoom level controls how zoomed in you are on the map. The following list gives you an
+        idea of what level of detail each level of zoom shows:
+
+        1: World
+        5: Landmass/continent
+        10: City
+        15: Streets
+        20: Buildings*/
+        val zoomLevel = 15f
+
+        //Create a new LatLng object called home.
+        val homeLatLng = LatLng(latitude, longitude)
+
+        /*  Move the camera to home by calling the moveCamera() function on the GoogleMap object and
+     pass in a CameraUpdate object using CameraUpdateFactory.newLatLngZoom().*/
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+
+        //Add a marker to the map at your home.
+        map.addMarker(MarkerOptions().position(homeLatLng))
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
