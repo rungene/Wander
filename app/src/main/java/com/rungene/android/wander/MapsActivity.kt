@@ -67,6 +67,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //call setMapLongClick(). Pass in map.
         setMapLongClick(map)
 
+        //Call setPoiClick() at the end of onMapReady(). Pass in map
+        setPoiClick(map)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -117,6 +120,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             .title(getString(R.string.dropped_pin))
                             .snippet(snippet)
             )
+        }
+    }
+
+    //By default, points of interest (POIs) appear on the map along with their corresponding icons.
+    //When the map type is set to normal, business POIs also appear on the map. Business POIs
+    // represent businesses such as shops, restaurants, and hotels.
+    //add an OnPoiClickListener to the map. This click-listener places a marker on the map
+    //immediately when the user clicks on a POI.
+    private fun setPoiClick(map: GoogleMap) {
+        map.setOnPoiClickListener { poi ->
+            val poiMarker = map.addMarker(
+                    MarkerOptions()
+                            .position(poi.latLng)
+                            .title(poi.name)
+            )
+            //setOnPoiClickListener function, call showInfoWindow() on poiMarker to immediately
+        // show the info window.
+            poiMarker.showInfoWindow()
+
         }
     }
 }
