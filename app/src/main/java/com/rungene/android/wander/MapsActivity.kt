@@ -1,7 +1,9 @@
 package com.rungene.android.wander
 
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 
@@ -10,12 +12,15 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
+    //Create a TAG class variable above the onCreate() method. This will be used for logging purposes.
+    private val TAG = MapsActivity::class.java.simpleName
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //Call setPoiClick() at the end of onMapReady(). Pass in map
         setPoiClick(map)
+
+        //Call the setMapStyle(). passing in your GoogleMap object.
+        setMapStyle(map)
 
     }
 
@@ -129,16 +137,39 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //add an OnPoiClickListener to the map. This click-listener places a marker on the map
     //immediately when the user clicks on a POI.
     private fun setPoiClick(map: GoogleMap) {
+        //setOnPoiClickListener function, call showInfoWindow() on poiMarker to immediately
         map.setOnPoiClickListener { poi ->
             val poiMarker = map.addMarker(
                     MarkerOptions()
                             .position(poi.latLng)
                             .title(poi.name)
             )
-            //setOnPoiClickListener function, call showInfoWindow() on poiMarker to immediately
+
         // show the info window.
             poiMarker.showInfoWindow()
 
+        }
+    }
+
+    /*To set the JSON style to the map, call setMapStyle() on the GoogleMap object. Pass in a
+    MapStyleOptions object, which loads the JSON file. The setMapStyle() method returns a boolean
+    indicating the success of the styling.*/
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this,
+                            R.raw.map_style
+                    )
+            )
+
+            if (!success){
+                Log.e(TAG,"Style parsing failed")
+            }
+        }catch (e: Resources.NotFoundException){
+            Log.e(TAG, "Can't find style. Error: ", e)
         }
     }
 }
