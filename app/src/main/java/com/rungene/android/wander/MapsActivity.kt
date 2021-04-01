@@ -1,11 +1,16 @@
 package com.rungene.android.wander
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -19,6 +24,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     //Create a TAG class variable above the onCreate() method. This will be used for logging purposes.
     private val TAG = MapsActivity::class.java.simpleName
+
+    private val REQUEST_LOCATION_PERMISSION = 1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         10: City
         15: Streets
         20: Buildings*/
-        val zoomLevel = 18f
+        val zoomLevel = 15f
         //defines the size of the overlay
         val overlaySize = 100f
 
@@ -87,6 +94,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //Call the setMapStyle(). passing in your GoogleMap object.
         setMapStyle(map)
+
+       // callback to enable the location layer
+        enableMyLocation()
 
     }
 
@@ -183,4 +193,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.e(TAG, "Can't find style. Error: ", e)
         }
     }
+
+//check if the user has granted the permission.
+    private fun isPermissionGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    //To enable location tracking in your app, create a method
+    // If the permission is granted, enable the location layer. Otherwise, request the permission:
+
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            map.isMyLocationEnabled = true
+
+           // map.setMyLocationEnabled(true)
+        }
+        else {
+            ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+ /*   If the requestCode is equal to REQUEST_LOCATION_PERMISSION permission is granted, and if the
+    grantResults array is non empty with PackageManager.PERMISSION_GRANTED in its first slot,
+    call enableMyLocation():
+*/
+ override fun onRequestPermissionsResult(
+         requestCode: Int,
+         permissions: Array<String>,
+         grantResults: IntArray) {
+     // Check if location permissions are granted and if so enable the
+     // location data layer.
+     if (requestCode == REQUEST_LOCATION_PERMISSION) {
+         if (grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+             enableMyLocation()
+         }
+     }
+ }
+
 }
